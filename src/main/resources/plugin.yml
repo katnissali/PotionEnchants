@@ -1,0 +1,11 @@
+name: PotionEnchants
+version: '${project.version}'
+main: me.BigMarco254.potionenchants.PotionEnchants
+author: BigMarco254
+api-version: 1.17
+
+softdepend: [PvPingMobCoins]
+
+commands:
+  potionenchants:
+    aliases: [enchanter]
