@@ -4,7 +4,7 @@ import me.BigMarco254.potionenchants.PotionEnchants;
 import me.BigMarco254.potionenchants.objects.EnchantCategory;
 import me.BigMarco254.potionenchants.objects.ListenerEnchant;
 import me.BigMarco254.potionenchants.utils.Pair;
-import me.tox.PvPingMobCoins.api.listener.MobDeathEvent;
+//import me.tox.PvPingMobCoins.api.listener.MobDeathEvent;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.enchantments.EnchantmentTarget;
@@ -36,18 +36,18 @@ public class MobcoinLuck extends ListenerEnchant {
             }
         }
     }
-
-    @Override
-    public void onMobCoin(MobDeathEvent e, int level) {
-        //give extra mob coin based on chance
-        Pair<Integer, Integer> addChance = levelMobCoinsAdd.getOrDefault(level, null);
-        if (addChance == null) return;
-
-        int randomNum = this.random.nextInt(100);
-
-        if (randomNum < addChance.getKey()) {
-            Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "mobcoins give " + e.getPlayer().getName() + " " + addChance.getValue());
-            //PvPingMobCoinsAPI.getInstance().addCoins(e.getPlayer(), addChance.getValue());
-        }
-    }
+//
+//    @Override
+//    public void onMobCoin(MobDeathEvent e, int level) {
+//        //give extra mob coin based on chance
+//        Pair<Integer, Integer> addChance = levelMobCoinsAdd.getOrDefault(level, null);
+//        if (addChance == null) return;
+//
+//        int randomNum = this.random.nextInt(100);
+//
+//        if (randomNum < addChance.getKey()) {
+//            Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "mobcoins give " + e.getPlayer().getName() + " " + addChance.getValue());
+//            //PvPingMobCoinsAPI.getInstance().addCoins(e.getPlayer(), addChance.getValue());
+//        }
+//    }
 }

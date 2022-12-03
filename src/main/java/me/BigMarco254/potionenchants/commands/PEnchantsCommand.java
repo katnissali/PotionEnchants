@@ -12,5 +12,6 @@ public class PEnchantsCommand implements CommandExecutor {
         if (!(sender instanceof Player)) sender.sendMessage("must be player");
         else new EnchanterMenu((Player) sender);
         return false;
+
     }
 }

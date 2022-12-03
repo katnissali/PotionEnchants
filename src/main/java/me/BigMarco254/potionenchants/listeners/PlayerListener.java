@@ -7,7 +7,7 @@ import me.BigMarco254.potionenchants.objects.PEnchant;
 import me.BigMarco254.potionenchants.objects.PotionEnchant;
 import me.BigMarco254.potionenchants.utils.Pair;
 import me.BigMarco254.potionenchants.utils.Utils;
-import me.tox.PvPingMobCoins.api.listener.MobDeathEvent;
+//import me.tox.PvPingMobCoins.api.listener.MobDeathEvent;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -24,13 +24,16 @@ import org.bukkit.inventory.ItemStack;
 
 import javax.annotation.Nullable;
 import java.util.Map;
+import java.util.Objects;
 
 public class PlayerListener implements Listener {
 
     @EventHandler
     public void onInventoryClick(InventoryClickEvent e){
-        if(e.isCancelled()) return;
-        if(e.getAction() == InventoryAction.NOTHING) return;// Why does this get called if nothing happens??
+        System.out.println(e.getClick() + ", " + e.getAction());
+        if(e.isCancelled() || e.getAction() == InventoryAction.NOTHING){
+            return;
+        }
         if(e.getClick().equals(ClickType.SHIFT_LEFT)
                 || e.getClick().equals(ClickType.SHIFT_RIGHT)
                 || e.getClick().equals(ClickType.NUMBER_KEY)
@@ -44,25 +47,27 @@ public class PlayerListener implements Listener {
         ItemStack scrollItem = e.getCursor(); //item that should be scroll
         ItemStack oldItem = e.getCurrentItem(); //item that was previously in slot
 
-        if (scrollItem == null
-                || scrollItem.getType() == Material.AIR
-                || oldItem == null
-                || oldItem.getType() == Material.AIR
-                || scrollItem.getType() != Material.FIRE_CHARGE) return;
+        if (isAir(scrollItem) || isAir(oldItem) || Objects.requireNonNull(scrollItem).getType() != Material.FIRE_CHARGE){
+            return;
+        }
+
+        assert oldItem != null;
 
         Pair<PEnchant, Integer> enchLev = Utils.getScrollEnchant(scrollItem);
 
-        if (enchLev == null) return;
+        if (enchLev == null){
+            return;
+        }
 
         e.setCancelled(true);
 
         if (!Utils.isEnchantCompatibleWith(oldItem, enchLev.getKey())) {
             e.getWhoClicked().sendMessage(Utils.colorize(PotionEnchants.getInstance().getConfig().getString("messages.enchant-not-compatible")));
-            return;
+        } else {
+            e.setCursor(null);
+            e.getCursor().setType(Material.AIR);
+            e.setCurrentItem(Utils.applyCustomEnchant(oldItem, enchLev.getKey(), enchLev.getValue()));
         }
-
-        e.setCursor(null);
-        e.setCurrentItem(Utils.applyCustomEnchant(oldItem, enchLev.getKey(), enchLev.getValue()));
     }
 
     @EventHandler
@@ -124,17 +129,17 @@ public class PlayerListener implements Listener {
         });
     }
 
-    @EventHandler
-    public void onPlayerMobCoin(MobDeathEvent e) {
-        if (isAir(e.getPlayer())) return;
-
-        Map<PEnchant, Integer> enchants = Utils.getCustomEnchants(e.getPlayer().getInventory().getItemInMainHand());
-        enchants.forEach((ench, level) -> {
-            if (ench.isListenerEnchant()) {
-                ((ListenerEnchant)ench).onMobCoin(e, level);
-            }
-        });
-    }
+//    @EventHandler
+//    public void onPlayerMobCoin(MobDeathEvent e) {
+//        if (isAir(e.getPlayer())) return;
+//
+//        Map<PEnchant, Integer> enchants = Utils.getCustomEnchants(e.getPlayer().getInventory().getItemInMainHand());
+//        enchants.forEach((ench, level) -> {
+//            if (ench.isListenerEnchant()) {
+//                ((ListenerEnchant)ench).onMobCoin(e, level);
+//            }
+//        });
+//    }
 
     @EventHandler
     public void onChangeItemInHand(PlayerItemHeldEvent e) {

@@ -5,6 +5,7 @@ author: BigMarco254
 api-version: 1.17
 
 softdepend: [PvPingMobCoins]
+depend: [Vault]
 
 commands:
   potionenchants:

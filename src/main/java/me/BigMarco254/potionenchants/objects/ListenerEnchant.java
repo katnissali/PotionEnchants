@@ -1,6 +1,6 @@
 package me.BigMarco254.potionenchants.objects;
 
-import me.tox.PvPingMobCoins.api.listener.MobDeathEvent;
+//import me.tox.PvPingMobCoins.api.listener.MobDeathEvent;
 import org.bukkit.enchantments.EnchantmentTarget;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
@@ -17,7 +17,7 @@ public abstract class ListenerEnchant extends PEnchant {
 
     public void onPlayerAttack(EntityDamageByEntityEvent e, int level) {}
 
-    public void onMobCoin(MobDeathEvent e, int level) {}
+//    public void onMobCoin(MobDeathEvent e, int level) {}
 
     public void onPlayerInteract(PlayerInteractEvent e, int level) {}
 

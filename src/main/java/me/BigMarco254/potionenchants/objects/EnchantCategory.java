@@ -1,17 +1,13 @@
 package me.BigMarco254.potionenchants.objects;
 
 public enum EnchantCategory {
-    TOOLS("tools"),
-    ARMOR("armor"),
-    SWORD("sword");
 
-    final String configKey;
-
-    EnchantCategory(String configKey) {
-        this.configKey = configKey;
-    }
+    TOOLS,
+    ARMOR,
+    SWORD;
 
     public String getConfigKey() {
-        return configKey;
+        return name().toLowerCase();
     }
+
 }

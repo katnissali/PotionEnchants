@@ -17,6 +17,8 @@ import org.bukkit.event.inventory.InventoryType.SlotType;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerItemBreakEvent;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.Damageable;
+import org.bukkit.inventory.meta.ItemMeta;
 
 /**
  * @author Arnah
@@ -57,7 +59,7 @@ public class ArmorListener implements Listener{
                 if(e.getRawSlot() == newArmorType.getSlot()){
                     equipping = false;
                 }
-                if(newArmorType.equals(ArmorType.HELMET) && (equipping ? isAirOrNull(e.getWhoClicked().getInventory().getHelmet()) : !isAirOrNull(e.getWhoClicked().getInventory().getHelmet())) || newArmorType.equals(ArmorType.CHESTPLATE) && (equipping ? isAirOrNull(e.getWhoClicked().getInventory().getChestplate()) : !isAirOrNull(e.getWhoClicked().getInventory().getChestplate())) || newArmorType.equals(ArmorType.LEGGINGS) && (equipping ? isAirOrNull(e.getWhoClicked().getInventory().getLeggings()) : !isAirOrNull(e.getWhoClicked().getInventory().getLeggings())) || newArmorType.equals(ArmorType.BOOTS) && (equipping ? isAirOrNull(e.getWhoClicked().getInventory().getBoots()) : !isAirOrNull(e.getWhoClicked().getInventory().getBoots()))){
+                if(newArmorType.equals(ArmorType.HELMET) && (equipping == isAirOrNull(e.getWhoClicked().getInventory().getHelmet())) || newArmorType.equals(ArmorType.CHESTPLATE) && (equipping == isAirOrNull(e.getWhoClicked().getInventory().getChestplate())) || newArmorType.equals(ArmorType.LEGGINGS) && (equipping == isAirOrNull(e.getWhoClicked().getInventory().getLeggings())) || newArmorType.equals(ArmorType.BOOTS) && (equipping ? isAirOrNull(e.getWhoClicked().getInventory().getBoots()) : !isAirOrNull(e.getWhoClicked().getInventory().getBoots()))){
                     ArmorEquipEvent armorEquipEvent = new ArmorEquipEvent((Player) e.getWhoClicked(), ArmorEquipEvent.EquipMethod.SHIFT_CLICK, newArmorType, equipping ? null : e.getCurrentItem(), equipping ? e.getCurrentItem() : null);
                     Bukkit.getServer().getPluginManager().callEvent(armorEquipEvent);
                     if(armorEquipEvent.isCancelled()){
@@ -105,10 +107,9 @@ public class ArmorListener implements Listener{
 
     @EventHandler
     public void playerInteractEvent(PlayerInteractEvent e){
-        if(e.getAction() == Action.PHYSICAL) return;
         if(e.getAction() == Action.RIGHT_CLICK_AIR || e.getAction() == Action.RIGHT_CLICK_BLOCK){
             final Player player = e.getPlayer();
-            if(e.getClickedBlock() != null && e.getAction() == Action.RIGHT_CLICK_BLOCK){// Having both of these checks is useless, might as well do it though.
+            if(e.getClickedBlock() != null){
                 // Some blocks have actions when you right click them which stops the client from equipping the armor in hand.
                 Material mat = e.getClickedBlock().getType();
                 if (blockedMaterials.contains(mat)) {
@@ -158,7 +159,10 @@ public class ArmorListener implements Listener{
             if(armorEquipEvent.isCancelled()){
                 ItemStack i = e.getBrokenItem().clone();
                 i.setAmount(1);
-                i.setDurability((short) (i.getDurability() - 1));
+                Damageable meta = (Damageable) i.getItemMeta();
+                assert meta != null;
+                meta.setDamage((short) (meta.getDamage() - 1));
+                i.setItemMeta(meta);
                 if(type.equals(ArmorType.HELMET)){
                     p.getInventory().setHelmet(i);
                 }else if(type.equals(ArmorType.CHESTPLATE)){

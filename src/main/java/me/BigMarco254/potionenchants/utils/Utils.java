@@ -18,13 +18,14 @@ import org.bukkit.craftbukkit.v1_19_R1.inventory.CraftItemStack;
 //import org.bukkit.craftbukkit.v1_8_R3.util.CraftMagicNumbers;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 
 import java.util.*;
 import java.util.stream.Collectors;
 
 public class Utils {
 
-//    private static String getKey(NBTTagCompound tag, String key){
+    //    private static String getKey(NBTTagCompound tag, String key){
 //        return getAllKeys(tag).stream().filter(value -> value.equals(key)).findFirst().orElse(null);
 //    }
     private static String getString(NBTTagList tag, int i){
@@ -55,7 +56,9 @@ public class Utils {
         tag.a(arg0, arg1);
     }
     private static boolean hasKey(NBTTagCompound tag, String key){
-        return tag.b(key);
+//        return tag.b(key);
+
+        return tag.d().contains(key);
     }
     private static NBTTagList getList(NBTTagCompound tag, String str, int num){
         return tag.c(str, num); //  GOOD
@@ -92,7 +95,7 @@ public class Utils {
         set(displayTag, "Lore", loreList);
         set(tag, "display", displayTag);
 //        NBTTagList customEnchantsList = tag.hasKey("PotionEnchants") ? tag.getList("PotionEnchants", 10) : new NBTTagList();
-        NBTTagList customEnchantsList = hasKey(tag, "PotionEnchants") ? getList(tag, "PotionEnchants", 10) : new NBTTagList();
+        NBTTagList customEnchantsList = hasKey(tag, "PotionEnchant") ? getList(tag, "PotionEnchant", 10) : new NBTTagList();
         NBTTagCompound addedEnchTag = new NBTTagCompound();
 //        addedEnchTag.setShort("id", (short)enchant.getId());
 //        addedEnchTag.setShort("level", (short)level);
@@ -100,7 +103,7 @@ public class Utils {
         setShort(addedEnchTag, "level", (short)level);
         customEnchantsList.add(addedEnchTag);
 //        tag.set("PotionEnchants", customEnchantsList);
-        set(tag, "PotionEnchants", customEnchantsList);
+        set(tag, "PotionEnchant", customEnchantsList);
 //        if (!tag.hasKey("ench")) {
         if (!hasKey(tag, "ench")) {
 //            tag.set("ench", new NBTTagList());
@@ -108,19 +111,34 @@ public class Utils {
         }
         setTag(nmsItem, tag);
 //        nmsItem.setTag(tag);
-        return CraftItemStack.asBukkitCopy(nmsItem);
+
+        ItemStack newItem = CraftItemStack.asBukkitCopy(nmsItem);
+        ItemMeta meta = newItem.getItemMeta();
+//        meta.setDisplayName(getCompound(tag, "display").toString());
+        meta.setLore(Collections.singletonList(colorize(format(PotionEnchants.getInstance().getConfig().getString("enchants.lore-format"), new Pair<>("\\{name}", enchant.getName()), new Pair<>("\\{level}", PotionEnchants.getRomanNumeral(level))))));
+        newItem.setItemMeta(meta);
+
+        return newItem;
     }
 
-    public static boolean isEnchantCompatibleWith(ItemStack item, PEnchant enchant) {
+//    public static boolean isEnchantCompatibleWith(ItemStack item, PEnchant enchant) {
 //        if (!enchant.getItemTarget().includes(item.getType())) {
 //            return false;
 //        }
 //        Map<PEnchant, Integer> currentEnchants = getCustomEnchants(item);
-//        if (currentEnchants.containsKey(enchant)) {
-//            return false;
-//        }
-//        return true;
-        return enchant.getItemTarget().includes(item.getType()) && getCustomEnchants(item).containsKey(enchant);
+//        System.out.println("currentEnchant keys: " + currentEnchants.keySet());
+//        System.out.println("ench key: " + enchant);
+//        return !currentEnchants.containsKey(enchant);
+////        if (currentEnchants.containsKey(enchant)) {
+////            System.out.println("contains key");
+////            return false;
+////        }
+////        return true;
+////        return enchant.getItemTarget().includes(item.getType()) && getCustomEnchants(item).containsKey(enchant);
+//
+//    }
+    public static boolean isEnchantCompatibleWith(ItemStack item, PEnchant enchant) {
+        return enchant.getItemTarget().includes(item.getType()) && !getCustomEnchants(item).containsKey(enchant);
     }
 
     public static Map<PEnchant, Integer> getCustomEnchants(ItemStack itemStack) {
@@ -129,11 +147,11 @@ public class Utils {
         }
         net.minecraft.world.item.ItemStack nmsItem = CraftItemStack.asNMSCopy(itemStack);
 //        if (!nmsItem.hasTag() || !nmsItem.getTag().hasKey("PotionEnchants")) {
-        if(!hasTag(nmsItem) || !hasKey(getTag(nmsItem), "PotionEnchants")){
+        if(!hasTag(nmsItem) || !hasKey(getTag(nmsItem), "PotionEnchant")){
             return Collections.emptyMap();
         }
 //        NBTTagList customEnchs = nmsItem.getTag().getList("PotionEnchants", 10);
-        NBTTagList customEnchs = getList(getTag(nmsItem), "PotionEnchants", 10);
+        NBTTagList customEnchs = getList(getTag(nmsItem), "PotionEnchant", 10);
         Map<PEnchant, Integer> result = new HashMap<>(customEnchs.size());
         for (NBTBase customEnch : customEnchs) {
 //            int id = 0xffff & customEnchs.get(i).getShort("id");
@@ -144,6 +162,7 @@ public class Utils {
         }
         return result;
     }
+
 
     public static ItemStack getRandomEnchantScroll(EnchantCategory category) {
         Random random = new Random();
@@ -205,7 +224,17 @@ public class Utils {
         set(tag, "Explosion", explosion);
 //        nmsItem.setTag(tag);
         setTag(nmsItem, tag);
-        return CraftItemStack.asBukkitCopy(nmsItem);
+        ItemStack craftItem = CraftItemStack.asBukkitCopy(nmsItem);
+        ItemMeta meta = craftItem.getItemMeta();
+        meta.setDisplayName(Utils.colorize(
+                Utils.format(
+                        PotionEnchants.getInstance().getConfig().getString("enchant-scrolls." + enchant.getCategory().getConfigKey() + ".name"),
+                        new Pair<>("\\{name}", enchant.getName()),
+                        new Pair<>("\\{level}", PotionEnchants.getRomanNumeral(level))
+                )));
+        meta.setLore(Utils.colorize(PotionEnchants.getInstance().getConfig().getStringList("enchant-scrolls." + enchant.getCategory().getConfigKey() + ".lore")));
+        craftItem.setItemMeta(meta);
+        return craftItem;
     }
 
     public static Pair<PEnchant, Integer> getScrollEnchant(ItemStack itemStack) {
@@ -214,6 +243,7 @@ public class Utils {
         if (!hasTag(nmsItem) || !hasKey(getTag(nmsItem), "PotionEnchant")) {
             return null;
         }
+
 //        NBTTagCompound enchTag = getTag(nmsItem).getCompound("PotionEnchant");
         NBTTagCompound enchTag = getCompound(getTag(nmsItem), "PotionEnchant");
 

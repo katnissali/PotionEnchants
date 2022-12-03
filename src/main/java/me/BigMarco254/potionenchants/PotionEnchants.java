@@ -36,21 +36,23 @@ public class PotionEnchants extends JavaPlugin {
         this.setupRomanNumerals();
         this.setupEnchants();
         this.setupEconomy();
+
         PluginCommand cmd = this.getCommand("potionenchants");
         if(cmd != null) cmd.setExecutor(new PEnchantsCommand());
+
         this.registerListeners();
         System.out.println("PotionEnchants has been enabled!");
     }
 
     private boolean setupEconomy() {
-        if (Bukkit.getPluginManager().getPlugin("Vault") == null) {
-            return false;
-        }
-        RegisteredServiceProvider rsp = this.getServer().getServicesManager().getRegistration(Economy.class);
+        if (Bukkit.getPluginManager().getPlugin("Vault") == null) return false;
+
+        RegisteredServiceProvider<Economy> rsp = this.getServer().getServicesManager().getRegistration(Economy.class);
+
         if (rsp == null) return false;
 
-        this.econ = (Economy)rsp.getProvider();
-        return this.econ != null;
+        this.econ = rsp.getProvider();
+        return true;
     }
 
     public Economy getEconomy() {
@@ -58,23 +60,29 @@ public class PotionEnchants extends JavaPlugin {
     }
 
     private void registerListeners() {
+        System.out.println("Registering listeners...");
         PluginManager pm = Bukkit.getPluginManager();
         List<Material> clickableBlocks = this.getConfig().getStringList("right-clickable-blocks-dont-armor-mount").stream().map(Material::getMaterial).collect(Collectors.toList());
         pm.registerEvents(new ArmorListener(clickableBlocks), this);
         pm.registerEvents(new PlayerListener(), this);
         pm.registerEvents(new BlockListeners(), this);
         pm.registerEvents(new MenuAPI(), this);
+        System.out.println("Listeners registered.");
     }
 
     private void setupRomanNumerals() {
         ConfigurationSection sec = this.getConfig().getConfigurationSection("enchants.levels");
-        Set<String> keys = sec.getKeys(false);
-        ROMAN_NUMERALS = new HashMap<>(keys.size());
-        for (String k : keys) {
-            try {
-                ROMAN_NUMERALS.put(Integer.parseInt(k), sec.getString(k));
-            }catch (Exception e) {
-                System.out.println("PotionEnchants Error: Invalid number for enchants.levels");
+        if(sec == null){
+            System.out.println("Error: Configuration Section enchants.levels is null, cannot set up Roman Numerals. This may cause errors.");
+        } else {
+            Set<String> keys = sec.getKeys(false);
+            ROMAN_NUMERALS = new HashMap<>(keys.size());
+            for (String k : keys) {
+                try {
+                    ROMAN_NUMERALS.put(Integer.parseInt(k), sec.getString(k));
+                } catch (Exception e) {
+                    System.out.println("PotionEnchants Error: Invalid number for enchants.levels");
+                }
             }
         }
     }
@@ -100,11 +108,12 @@ public class PotionEnchants extends JavaPlugin {
                 new Inquisitive(),
                 new Freeze()
         );
-        ENCHANTS_BY_NAME = new HashMap<>(enchants.size());
-        ENCHANTS_BY_ID = new HashMap<>(enchants.size());
-        ENCHANTS_BY_CATEGORY = new HashMap<>(EnchantCategory.values().length);
+        ENCHANTS_BY_NAME = new HashMap<>();
+        ENCHANTS_BY_ID = new HashMap<>();
+        ENCHANTS_BY_CATEGORY = new HashMap<>();
         for (PEnchant ench : enchants) {
             ENCHANTS_BY_NAME.put(ench.getName(), ench);
+            System.out.println("Loading ench " + ench + ", " + ench.getId());
             ENCHANTS_BY_ID.put(ench.getId(), ench);
             if (ENCHANTS_BY_CATEGORY.containsKey(ench.getCategory())) {
                 ENCHANTS_BY_CATEGORY.get(ench.getCategory()).add(ench);

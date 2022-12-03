@@ -6,7 +6,7 @@
 
     <groupId>me.BigMarco254.potionenchants</groupId>
     <artifactId>PotionEnchants</artifactId>
-    <version>1.0.2</version>
+    <version>1.0.4</version>
     <packaging>jar</packaging>
 
     <name>PotionEnchants</name>
@@ -103,13 +103,13 @@
             <scope>system</scope>
             <systemPath>${basedir}/libs/SavageFactions-2.5-RC-9.jar</systemPath>
         </dependency>
-        <dependency>
-            <groupId>me.tox.PvPingMobCoins</groupId>
-            <artifactId>MobCoins</artifactId>
-            <version>3.0</version>
-            <scope>system</scope>
-            <systemPath>${basedir}/libs/PvPingMobCoins2.jar</systemPath>
-        </dependency>
+<!--        <dependency>-->
+<!--            <groupId>me.tox.PvPingMobCoins</groupId>-->
+<!--            <artifactId>MobCoins</artifactId>-->
+<!--            <version>3.0</version>-->
+<!--            <scope>system</scope>-->
+<!--            <systemPath>${basedir}/libs/PvPingMobCoins2.jar</systemPath>-->
+<!--        </dependency>-->
 
         <dependency>
             <groupId>com.github.MilkBowl</groupId>
