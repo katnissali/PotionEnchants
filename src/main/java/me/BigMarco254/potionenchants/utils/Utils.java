@@ -93,6 +93,7 @@ public class Utils {
 //        displayTag.set("Lore", loreList);
 //        tag.set("display", displayTag);
         set(displayTag, "Lore", loreList);
+        System.out.println("lore list: " + loreList);
         set(tag, "display", displayTag);
 //        NBTTagList customEnchantsList = tag.hasKey("PotionEnchants") ? tag.getList("PotionEnchants", 10) : new NBTTagList();
         NBTTagList customEnchantsList = hasKey(tag, "PotionEnchant") ? getList(tag, "PotionEnchant", 10) : new NBTTagList();
@@ -119,7 +120,9 @@ public class Utils {
         assert meta != null;
         List<String> lore = meta.getLore();
         lore.add(colorize(format(PotionEnchants.getInstance().getConfig().getString("enchants.lore-format"), new Pair<>("\\{name}", enchant.getName()), new Pair<>("\\{level}", PotionEnchants.getRomanNumeral(level)))));
+        lore = lore.stream().filter(str -> !str.equalsIgnoreCase("")).collect(Collectors.toList());
         meta.setLore(lore);
+        System.out.println("lore: " + lore);
         newItem.setItemMeta(meta);
 
         return newItem;
