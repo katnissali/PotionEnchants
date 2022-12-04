@@ -65,10 +65,8 @@ public class PlayerListener implements Listener {
             e.setCancelled(true);
             e.setCursor(null);
 
-            System.out.println("scroll item before: " + scrollItem);
             scrollItem.setType(Material.AIR);
             scrollItem.setAmount(0);
-            System.out.println("scroll item after: " + scrollItem);
             e.setCurrentItem(Utils.applyCustomEnchant(oldItem, enchLev.getKey(), enchLev.getValue()));
         }
     }

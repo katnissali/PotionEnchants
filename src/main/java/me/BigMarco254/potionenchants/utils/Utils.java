@@ -96,7 +96,6 @@ public class Utils {
         set(tag, "display", displayTag);
 //        NBTTagList customEnchantsList = tag.hasKey("PotionEnchants") ? tag.getList("PotionEnchants", 10) : new NBTTagList();
         NBTTagList customEnchantsList = hasKey(tag, "PotionEnchant") ? getList(tag, "PotionEnchant", 10) : new NBTTagList();
-        System.out.println("customList: " + customEnchantsList);
         NBTTagCompound addedEnchTag = new NBTTagCompound();
 //        addedEnchTag.setShort("id", (short)enchant.getId());
 //        addedEnchTag.setShort("level", (short)level);
@@ -104,15 +103,12 @@ public class Utils {
         setShort(addedEnchTag, "level", (short)level);
 
         customEnchantsList.add(addedEnchTag);
-        System.out.println("new custom list: " + customEnchantsList);
 //        tag.set("PotionEnchants", customEnchantsList);
         set(tag, "PotionEnchant", customEnchantsList);
-        System.out.println("custom enchs after: "+ getList(tag, "PotionEnchant", 10));
 //        if (!tag.hasKey("ench")) {
         if (!hasKey(tag, "ench")) {
 //            tag.set("ench", new NBTTagList());
             set(tag, "ench", new NBTTagList());
-            System.out.println("adding ench tag");
         }
         setTag(nmsItem, tag);
 //        nmsItem.setTag(tag);
@@ -146,10 +142,6 @@ public class Utils {
 //
 //    }
     public static boolean isEnchantCompatibleWith(ItemStack item, PEnchant enchant) {
-        System.out.println("enc target: " + enchant.getItemTarget());
-        System.out.println("target test: " + enchant.getItemTarget().includes(item));
-        System.out.println("includes: " + enchant.getItemTarget().includes(item.getType()));
-        System.out.println("has ench: " + getCustomEnchants(item).containsKey(enchant));
         return enchant.getItemTarget().includes(item.getType()) && !getCustomEnchants(item).containsKey(enchant);
     }
 
