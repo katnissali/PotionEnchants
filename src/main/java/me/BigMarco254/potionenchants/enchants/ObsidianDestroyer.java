@@ -13,6 +13,9 @@ import org.bukkit.inventory.ItemStack;
 import java.util.Collection;
 
 public class ObsidianDestroyer extends ListenerEnchant {
+
+    //  WORKS
+
     public ObsidianDestroyer() {
         super(EnchantmentTarget.TOOL, "Obsidian Destroyer", 113, 1, EnchantCategory.TOOLS, "obsidian-destroyer");
     }

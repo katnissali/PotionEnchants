@@ -6,7 +6,7 @@ import org.bukkit.inventory.ItemStack;
  * @author Arnah
  * @since Jul 30, 2015
  */
-public enum ArmorType{
+public enum ArmorType {
     HELMET(5), CHESTPLATE(6), LEGGINGS(7), BOOTS(8);
 
     private final int slot;

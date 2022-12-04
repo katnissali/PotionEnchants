@@ -42,6 +42,9 @@ public class PotionEnchants extends JavaPlugin {
 
         this.registerListeners();
         System.out.println("PotionEnchants has been enabled!");
+
+
+
     }
 
     private boolean setupEconomy() {

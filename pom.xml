@@ -6,7 +6,7 @@
 
     <groupId>me.BigMarco254.potionenchants</groupId>
     <artifactId>PotionEnchants</artifactId>
-    <version>1.0.4</version>
+    <version>1.0.5</version>
     <packaging>jar</packaging>
 
     <name>PotionEnchants</name>

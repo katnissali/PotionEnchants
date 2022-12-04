@@ -13,6 +13,8 @@ import java.util.*;
 
 public class Smelter extends ListenerEnchant {
 
+    // WORKS
+
     Map<Material, Material> itemConverstions;
 
     public Smelter() {
@@ -31,14 +33,16 @@ public class Smelter extends ListenerEnchant {
 
     @Override
     public void onBlockBreak(BlockBreakEvent e, int level) {
-        Collection<ItemStack> oldDrops = e.getBlock().getDrops(e.getPlayer().getItemInHand());
+        Collection<ItemStack> oldDrops = e.getBlock().getDrops(e.getPlayer().getInventory().getItemInMainHand());
+//        Collection<ItemStack> oldDrops = e.getBlock().getDrops();
+
         e.setCancelled(true);
         e.getBlock().setType(Material.AIR);
         for (ItemStack old : oldDrops) {
             if (itemConverstions.containsKey(old.getType())) {
                 ItemStack newItem = new ItemStack(itemConverstions.get(old.getType()), old.getAmount());
                 e.getBlock().getWorld().dropItemNaturally(e.getBlock().getLocation(), newItem);
-            }else {
+            } else {
                 e.getBlock().getWorld().dropItemNaturally(e.getBlock().getLocation(), old);
             }
         }

@@ -59,13 +59,16 @@ public class PlayerListener implements Listener {
             return;
         }
 
-        e.setCancelled(true);
-
         if (!Utils.isEnchantCompatibleWith(oldItem, enchLev.getKey())) {
             e.getWhoClicked().sendMessage(Utils.colorize(PotionEnchants.getInstance().getConfig().getString("messages.enchant-not-compatible")));
         } else {
+            e.setCancelled(true);
             e.setCursor(null);
-            e.getCursor().setType(Material.AIR);
+
+            System.out.println("scroll item before: " + scrollItem);
+            scrollItem.setType(Material.AIR);
+            scrollItem.setAmount(0);
+            System.out.println("scroll item after: " + scrollItem);
             e.setCurrentItem(Utils.applyCustomEnchant(oldItem, enchLev.getKey(), enchLev.getValue()));
         }
     }
@@ -143,22 +146,24 @@ public class PlayerListener implements Listener {
 
     @EventHandler
     public void onChangeItemInHand(PlayerItemHeldEvent e) {
-        ItemStack oldItem = e.getPlayer().getInventory().getItem(e.getPreviousSlot());
-        if (isAir(oldItem)) {
+        Player player = e.getPlayer();
+        ItemStack oldItem = player.getInventory().getItem(e.getPreviousSlot());
+        ItemStack newItem = player.getInventory().getItem(e.getNewSlot());
+
+        if (!isAir(oldItem)) {
             Map<PEnchant, Integer> oldItemEnchs = Utils.getCustomEnchants(oldItem);
             oldItemEnchs.forEach((ench, level) -> {
                 if (ench.isPotionEnchant() && ench.isItemInHandEnchant()) {
-                    ((PotionEnchant)ench).removeEnchant(e.getPlayer());
+                    ((PotionEnchant)ench).removeEnchant(player);
                 }
             });
         }
 
-        ItemStack newItem = e.getPlayer().getInventory().getItem(e.getNewSlot());
-        if (isAir(newItem)) {
+        if (!isAir(newItem)) {
             Map<PEnchant, Integer> newItemEnchs = Utils.getCustomEnchants(newItem);
             newItemEnchs.forEach((ench, level) -> {
                 if (ench.isPotionEnchant() && ench.isItemInHandEnchant()) {
-                    ((PotionEnchant)ench).applyEnchant(e.getPlayer(), level);
+                    ((PotionEnchant)ench).applyEnchant(player, level);
                 }
             });
         }

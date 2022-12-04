@@ -96,18 +96,23 @@ public class Utils {
         set(tag, "display", displayTag);
 //        NBTTagList customEnchantsList = tag.hasKey("PotionEnchants") ? tag.getList("PotionEnchants", 10) : new NBTTagList();
         NBTTagList customEnchantsList = hasKey(tag, "PotionEnchant") ? getList(tag, "PotionEnchant", 10) : new NBTTagList();
+        System.out.println("customList: " + customEnchantsList);
         NBTTagCompound addedEnchTag = new NBTTagCompound();
 //        addedEnchTag.setShort("id", (short)enchant.getId());
 //        addedEnchTag.setShort("level", (short)level);
         setShort(addedEnchTag, "id", (short)enchant.getId());
         setShort(addedEnchTag, "level", (short)level);
+
         customEnchantsList.add(addedEnchTag);
+        System.out.println("new custom list: " + customEnchantsList);
 //        tag.set("PotionEnchants", customEnchantsList);
         set(tag, "PotionEnchant", customEnchantsList);
+        System.out.println("custom enchs after: "+ getList(tag, "PotionEnchant", 10));
 //        if (!tag.hasKey("ench")) {
         if (!hasKey(tag, "ench")) {
 //            tag.set("ench", new NBTTagList());
             set(tag, "ench", new NBTTagList());
+            System.out.println("adding ench tag");
         }
         setTag(nmsItem, tag);
 //        nmsItem.setTag(tag);
@@ -115,7 +120,10 @@ public class Utils {
         ItemStack newItem = CraftItemStack.asBukkitCopy(nmsItem);
         ItemMeta meta = newItem.getItemMeta();
 //        meta.setDisplayName(getCompound(tag, "display").toString());
-        meta.setLore(Collections.singletonList(colorize(format(PotionEnchants.getInstance().getConfig().getString("enchants.lore-format"), new Pair<>("\\{name}", enchant.getName()), new Pair<>("\\{level}", PotionEnchants.getRomanNumeral(level))))));
+        assert meta != null;
+        List<String> lore = meta.getLore();
+        lore.add(colorize(format(PotionEnchants.getInstance().getConfig().getString("enchants.lore-format"), new Pair<>("\\{name}", enchant.getName()), new Pair<>("\\{level}", PotionEnchants.getRomanNumeral(level)))));
+        meta.setLore(lore);
         newItem.setItemMeta(meta);
 
         return newItem;
@@ -138,6 +146,10 @@ public class Utils {
 //
 //    }
     public static boolean isEnchantCompatibleWith(ItemStack item, PEnchant enchant) {
+        System.out.println("enc target: " + enchant.getItemTarget());
+        System.out.println("target test: " + enchant.getItemTarget().includes(item));
+        System.out.println("includes: " + enchant.getItemTarget().includes(item.getType()));
+        System.out.println("has ench: " + getCustomEnchants(item).containsKey(enchant));
         return enchant.getItemTarget().includes(item.getType()) && !getCustomEnchants(item).containsKey(enchant);
     }
 
@@ -202,7 +214,6 @@ public class Utils {
 //        tag.setInt("HideFlags", 34);
         setInt(tag, "HideFlags", 34);
 
-//        tag.set("ench", new NBTTagList()); //should add glow?? nvm yall dont want it
 //        tag.setString("AntI-StACk", UUID.randomUUID().toString());
         setString(tag, "AntI-StACk", UUID.randomUUID().toString());
         NBTTagCompound potEnchTag = new NBTTagCompound();
